@@ -17,7 +17,7 @@ export default function Family() {
   };
   return (
     <div className="stack">
-      <div className="hero" style={{ '--c': '#FF8A00', color: '#fff' }}>
+      <div className="hero" style={{ '--c': '#E8590C', color: '#fff' }}>
         <p className="bold" style={{ opacity: 0.9 }}>
           {t('thisWeek')} · {data.family.name}
         </p>

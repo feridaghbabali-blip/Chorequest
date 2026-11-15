@@ -3,7 +3,7 @@ import { useApp, CURRENCIES, store } from '../store.jsx';
 import { AVATARS, CHORE_ICONS, Avatar, ColorPicker, EmojiPicker, Field, MoneyInput, Price, Seg, Sheet, confirmBox } from '../ui.jsx';
 import { repeatText } from '../board.js';
 import { coinBurst } from '../celebrate.js';
-import { parseDate, weekStart } from '../shared/schedule.js';
+import { weekStart } from '../shared/schedule.js';
 
 export default function Parent() {
   const { isParent, t, data, setParentToken } = useApp();
@@ -100,7 +100,7 @@ function PinLock() {
 
 // ---------- approvals ----------
 function Approvals() {
-  const { t, data, api, money, toast, refresh, errorText, session } = useApp();
+  const { t, data, api, money, toast, refresh, errorText, session, fmtDate } = useApp();
   const [reject, setReject] = useState(null);
   const [photo, setPhoto] = useState(null);
   const pending = data.completions.filter((c) => c.status === 'pending');
@@ -145,7 +145,7 @@ function Approvals() {
                   {ch?.icon} {ch?.title}
                 </div>
                 <div className="small muted bold">
-                  {m?.name} · {parseDate(c.done_date).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+                  {m?.name} · {fmtDate(c.done_date)}
                 </div>
               </div>
               {c.has_photo ? (
@@ -385,9 +385,9 @@ function ChoreFormInner({ chore, onClose }) {
 
 // ---------- payday ----------
 function Payday() {
-  const { t, data, api, money, toast, refresh, today, lang, errorText } = useApp();
+  const { t, data, api, money, toast, refresh, today, fmtDate, errorText } = useApp();
   const total = data.members.reduce((s, m) => s + Math.max(0, m.stats.owed), 0);
-  const week = parseDate(weekStart(today)).toLocaleDateString(lang === 'az' ? 'az-Latn-AZ' : 'en-GB', { day: 'numeric', month: 'long' });
+  const week = fmtDate(weekStart(today), 'dm');
   async function pay(m) {
     if (!(await confirmBox(t('paidQ', { amount: money(m.stats.owed), name: m.name }), { okText: '💸 ' + t('markPaid') }))) return;
     try {
@@ -400,7 +400,7 @@ function Payday() {
   }
   return (
     <div className="stack">
-      <div className="hero" style={{ '--c': '#16C47F', color: '#fff' }}>
+      <div className="hero" style={{ '--c': '#0E9F6E', color: '#fff' }}>
         <p className="bold" style={{ opacity: 0.9 }}>
           {t('weekOf', { date: week })}
         </p>

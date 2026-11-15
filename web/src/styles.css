@@ -296,7 +296,7 @@ label.field { display: flex; flex-direction: column; gap: 6px; font-weight: 800;
 
 @media (min-width: 720px) {
   .board-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .app { padding-left: 24px; padding-right: 24px; }
+  .app, .app.wide { max-width: 820px; padding-left: 24px; padding-right: 24px; }
   .topbar { margin: 0 -24px; padding-left: 24px; padding-right: 24px; }
 }
 @media (max-width: 719px) { .board-grid { display: flex; flex-direction: column; gap: 12px; } }

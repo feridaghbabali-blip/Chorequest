@@ -2,7 +2,7 @@
 // personal preferences (language, theme), and live updates.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { translations } from './translations.js';
-import { todayStr } from './shared/schedule.js';
+import { todayStr, parseDate, weekday } from './shared/schedule.js';
 
 const Ctx = createContext(null);
 export const useApp = () => useContext(Ctx);
@@ -124,6 +124,18 @@ export function AppProvider({ children }) {
     [lang],
   );
 
+  // ---- dates, from the translation file (works even where the browser lacks the locale)
+  const fmtDate = useCallback(
+    (s, style = 'short') => {
+      const d = parseDate(s);
+      const tr = translations[lang] || translations.en;
+      if (style === 'long') return `${tr.daysLong[weekday(s)]}, ${d.getDate()} ${tr.months[d.getMonth()]}`;
+      if (style === 'dm') return `${d.getDate()} ${tr.months[d.getMonth()]}`;
+      return `${tr.days[weekday(s)]}, ${d.getDate()} ${tr.monthsShort[d.getMonth()]}`;
+    },
+    [lang],
+  );
+
   // ---- money: amounts are whole cents (qəpik)
   const currency = data?.family?.currency || 'AZN';
   const money = useCallback(
@@ -220,6 +232,7 @@ export function AppProvider({ children }) {
     setTheme,
     t,
     money,
+    fmtDate,
     currency,
     data,
     me,

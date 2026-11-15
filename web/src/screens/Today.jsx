@@ -2,12 +2,11 @@ import { useRef, useState } from 'react';
 import { useApp } from '../store.jsx';
 import { Avatar, Bar, Price } from '../ui.jsx';
 import { boardFor, repeatText, resizePhoto } from '../board.js';
-import { parseDate } from '../shared/schedule.js';
 
 export default function Today() {
-  const { t, data, me, today, lang } = useApp();
+  const { t, data, me, today, fmtDate } = useApp();
   const b = boardFor(data, me, today);
-  const dateText = parseDate(today).toLocaleDateString(lang === 'az' ? 'az-Latn-AZ' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+  const dateText = fmtDate(today, 'long');
 
   return (
     <div className="stack">
@@ -15,7 +14,7 @@ export default function Today() {
         <div className="row">
           <Avatar member={me} size="lg" />
           <div className="grow">
-            <p className="bold" style={{ opacity: 0.85, textTransform: 'capitalize' }}>
+            <p className="bold" style={{ opacity: 0.85 }}>
               {dateText}
             </p>
             <h1>{t('hi', { name: me.name })}</h1>

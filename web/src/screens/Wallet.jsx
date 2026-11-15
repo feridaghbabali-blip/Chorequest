@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../store.jsx';
 import { Bar, Field, MoneyInput, Sheet, EmojiPicker } from '../ui.jsx';
-import { BADGES, levelFor, parseDate } from '../shared/schedule.js';
+import { BADGES, levelFor } from '../shared/schedule.js';
 
 const GOAL_ICONS = ['🚲', '🎧', '🎮', '🎨', '⚽', '🛹', '📱', '🧸', '📚', '🎸', '👟', '🎁', '🏕️', '🎟️', '🐶', '💻'];
 const JARS = [
@@ -139,8 +139,7 @@ export default function Wallet() {
 }
 
 function History() {
-  const { t, me, data, money, lang } = useApp();
-  const fmt = (d) => parseDate(d).toLocaleDateString(lang === 'az' ? 'az-Latn-AZ' : 'en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  const { t, me, data, money, fmtDate: fmt } = useApp();
   const waiting = data.completions
     .filter((c) => c.member_id === me.id && c.status === 'pending')
     .map((c) => {
