@@ -2,6 +2,10 @@
 // personal preferences (language, theme), and live updates.
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { translations } from './translations.js';
+import * as local from './localApi.js';
+
+// Built as a claude.ai artifact? Then the artifact's shared store replaces the server.
+export const ARTIFACT = import.meta.env.VITE_TARGET === 'artifact';
 import { todayStr, parseDate, weekday } from './shared/schedule.js';
 
 const Ctx = createContext(null);
@@ -70,7 +74,7 @@ export function AppProvider({ children }) {
   });
   const [lang, setLangState] = useState(() => store.get('lang', navigator.language?.startsWith('az') ? 'az' : 'en'));
   const [theme, setThemeState] = useState(() => store.get('theme', 'system'));
-  const [data, setData] = useState(() => store.get('cache'));
+  const [data, setData] = useState(() => (ARTIFACT ? null : store.get('cache')));
   const [offline, setOffline] = useState(false);
   const [today, setToday] = useState(todayStr());
   const [toasts, setToasts] = useState([]);
@@ -80,7 +84,8 @@ export function AppProvider({ children }) {
     ...(session?.token ? { 'x-family-token': session.token } : {}),
     ...(parentToken ? { 'x-parent-token': parentToken } : {}),
   };
-  const api = useMemo(() => makeApi(() => headersRef.current), []);
+  const api = useMemo(() => (ARTIFACT ? local.makeLocalApi : makeApi)(() => headersRef.current), []);
+  const [conn, setConn] = useState(ARTIFACT ? 'connecting' : 'ready');
 
   const setSession = (s) => {
     store.set('session', s);
@@ -88,6 +93,11 @@ export function AppProvider({ children }) {
     if (!s) {
       store.set('cache', null);
       setData(null);
+      if (ARTIFACT && local.hasFamily()) {
+        const again = { token: 'artifact', memberId: null };
+        store.set('session', again);
+        setSessionState(again);
+      }
     }
   };
   const setParentToken = (t) => {
@@ -165,6 +175,7 @@ export function AppProvider({ children }) {
       if (parentToken && !state.isParent) setParentToken(null); // PIN changed elsewhere
     } catch (e) {
       if (e.message === 'no_family') setSession(null);
+      else if (ARTIFACT && e.message === 'offline') setOffline(true);
       else setOffline(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -174,9 +185,33 @@ export function AppProvider({ children }) {
     refresh();
   }, [refresh]);
 
+  // Artifact build: connect to the shared store once; the link itself is the family.
+  useEffect(() => {
+    if (!ARTIFACT) return;
+    let off;
+    local.connect().then((r) => {
+      setConn(r);
+      if (r !== 'ready') return;
+      const sync = () => {
+        if (local.hasFamily()) setSessionState((s) => s || { token: 'artifact', memberId: null });
+      };
+      sync();
+      off = local.onChange(sync);
+    });
+    return () => off?.();
+  }, []);
+  useEffect(() => {
+    if (!ARTIFACT || !session?.token) return;
+    let timer;
+    return local.onChange(() => {
+      clearTimeout(timer);
+      timer = setTimeout(refresh, 60);
+    });
+  }, [session?.token, refresh]);
+
   // Live updates: the server pings us whenever anything in the family changes.
   useEffect(() => {
-    if (!session?.token) return;
+    if (ARTIFACT || !session?.token) return;
     let es;
     let timer;
     const connect = () => {
@@ -233,6 +268,8 @@ export function AppProvider({ children }) {
     t,
     money,
     fmtDate,
+    conn,
+    photoUrl: (id) => (ARTIFACT ? local.photoOf(id) : `/api/completions/${id}/photo?t=${encodeURIComponent(session?.token || '')}`),
     currency,
     data,
     me,

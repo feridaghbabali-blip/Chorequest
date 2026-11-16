@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { useApp, store } from './store.jsx';
+import { useApp, store, ARTIFACT } from './store.jsx';
+import ICON from './assets/icon.svg';
 import { Avatar, ConfirmHost, Toasts } from './ui.jsx';
 import Welcome, { WhoAreYou } from './screens/Welcome.jsx';
 import Today from './screens/Today.jsx';
@@ -12,7 +13,7 @@ import { coinBurst, confettiBurst, flameBurst } from './celebrate.js';
 import { BADGES } from './shared/schedule.js';
 
 export default function App() {
-  const { session, data, me, t, offline } = useApp();
+  const { session, data, me, t, offline, conn } = useApp();
   const [tab, setTab] = useState(() => store.get('tab', 'today'));
   const [meOpen, setMeOpen] = useState(false);
   const go = (x) => {
@@ -24,7 +25,16 @@ export default function App() {
   useReminder();
 
   let body;
-  if (!session) body = <Welcome />;
+  if (ARTIFACT && conn !== 'ready')
+    body = (
+      <div className="app">
+        <div className="welcome">
+          <img className="logo" src={ICON} alt="" />
+          <h2>{conn === 'connecting' ? t('loading') : conn === 'no_db' ? t('needSignIn') : t('cantReach')}</h2>
+        </div>
+      </div>
+    );
+  else if (!session) body = <Welcome />;
   else if (!data) body = <div className="empty" style={{ paddingTop: 120 }}>{t('loading')}</div>;
   else if (!me) body = <WhoAreYou />;
   else {

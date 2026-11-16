@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { useApp, CURRENCIES, makeApi } from '../store.jsx';
+import { useApp, CURRENCIES, makeApi, ARTIFACT } from '../store.jsx';
 import { AVATARS, Avatar, ColorPicker, EmojiPicker, Field, Seg } from '../ui.jsx';
 import { LANGUAGES } from '../translations.js';
+import ICON from '../assets/icon.svg';
 import { todayStr } from '../shared/schedule.js';
 
 function LangSwitch() {
@@ -25,7 +26,7 @@ export default function Welcome() {
   return (
     <div className="app">
       <div className="welcome">
-        <img className="logo" src="/icon.svg" alt="" />
+        <img className="logo" src={ICON} alt="" />
         <div>
           <h1 className="big-title">{t('appName')}</h1>
           <p className="muted bold" style={{ fontSize: 18, marginTop: 6 }}>
@@ -43,9 +44,11 @@ export default function Welcome() {
           <button className="btn big block" onClick={() => setMode('create')}>
             ✨ {t('createFamily')}
           </button>
-          <button className="btn big block ghost" onClick={() => setMode('join')}>
-            🔑 {t('joinFamily')}
-          </button>
+          {!ARTIFACT && (
+            <button className="btn big block ghost" onClick={() => setMode('join')}>
+              🔑 {t('joinFamily')}
+            </button>
+          )}
         </div>
         <LangSwitch />
       </div>
@@ -54,7 +57,7 @@ export default function Welcome() {
 }
 
 function CreateFamily({ onBack }) {
-  const { t, setSession, setParentToken, errorText } = useApp();
+  const { t, setSession, setParentToken, errorText, api } = useApp();
   const [f, setF] = useState({ name: '', parentName: '', avatar: '🦁', color: '#7C4DFF', pin: '', currency: 'AZN', withSamples: true });
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -65,7 +68,7 @@ function CreateFamily({ onBack }) {
     setErr('');
     setBusy(true);
     try {
-      const r = await publicApi('/families', { method: 'POST', body: { ...f, date: todayStr() } });
+      const r = await (ARTIFACT ? api : publicApi)('/families', { method: 'POST', body: { ...f, date: todayStr() } });
       setParentToken(r.parentToken);
       setSession({ token: r.token, code: r.code, memberId: r.memberId });
     } catch (e) {

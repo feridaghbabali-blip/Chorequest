@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useApp, CURRENCIES, store } from '../store.jsx';
+import { useApp, CURRENCIES, store, ARTIFACT } from '../store.jsx';
 import { AVATARS, CHORE_ICONS, Avatar, ColorPicker, EmojiPicker, Field, MoneyInput, Price, Seg, Sheet, confirmBox } from '../ui.jsx';
 import { repeatText } from '../board.js';
 import { coinBurst } from '../celebrate.js';
@@ -100,7 +100,7 @@ function PinLock() {
 
 // ---------- approvals ----------
 function Approvals() {
-  const { t, data, api, money, toast, refresh, errorText, session, fmtDate } = useApp();
+  const { t, data, api, money, toast, refresh, errorText, photoUrl, fmtDate } = useApp();
   const [reject, setReject] = useState(null);
   const [photo, setPhoto] = useState(null);
   const pending = data.completions.filter((c) => c.status === 'pending');
@@ -150,7 +150,7 @@ function Approvals() {
               </div>
               {c.has_photo ? (
                 <button className="thumb" onClick={() => setPhoto(c.id)} aria-label="Photo">
-                  <img className="thumb" src={`/api/completions/${c.id}/photo?t=${session.token}`} alt="" />
+                  <img className="thumb" src={photoUrl(c.id)} alt="" />
                 </button>
               ) : null}
               <Price cents={c.amount} />
@@ -173,7 +173,7 @@ function Approvals() {
       )}
       <RejectSheet completion={reject} onClose={() => setReject(null)} />
       <Sheet open={!!photo} onClose={() => setPhoto(null)}>
-        {photo && <img src={`/api/completions/${photo}/photo?t=${session.token}`} alt="" style={{ width: '100%', borderRadius: 20 }} />}
+        {photo && <img src={photoUrl(photo)} alt="" style={{ width: '100%', borderRadius: 20 }} />}
       </Sheet>
     </div>
   );
@@ -455,6 +455,12 @@ function Members() {
   };
   return (
     <div className="stack">
+      {ARTIFACT ? (
+        <div className="card stack">
+          <h3>🔗 {t('inviteTitle')}</h3>
+          <p className="small muted">{t('inviteHint')}</p>
+        </div>
+      ) : (
       <div className="card stack">
         <h3>🔑 {t('familyCode')}</h3>
         <div className="code-box">{data.family.code}</div>
@@ -463,6 +469,7 @@ function Members() {
           📤 {t('copy')}
         </button>
       </div>
+      )}
       <div className="section-title" style={{ margin: '8px 4px 0' }}>
         {t('members')}
       </div>
