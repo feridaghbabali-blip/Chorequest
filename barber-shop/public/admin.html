@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Staff · Bookings</title>
+  </head>
+  <body>
+    <header class="top"><div class="wrap"><a class="logo" href="/"><span class="pole" aria-hidden="true"></span>Staff</a><button class="small-btn" id="logout" hidden style="margin-left:auto">Log out</button></div></header>
+    <main class="wrap" style="padding-block: 32px 64px">
+      <form id="login" class="contact" style="max-width: 380px">
+        <h2>Staff login</h2>
+        <label class="f">Password<input class="input" id="pw" type="password" autocomplete="current-password" required /></label>
+        <button class="btn">Open the book</button>
+        <p class="error" id="login-err" role="alert"></p>
+      </form>
+      <div id="app" hidden>
+        <div class="admin-bar" style="margin-bottom: 18px">
+          <button class="small-btn" id="prev" aria-label="Previous day">←</button>
+          <input class="input" type="date" id="date" style="width: auto; min-height: 42px" />
+          <button class="small-btn" id="next" aria-label="Next day">→</button>
+          <button class="small-btn" id="today">Today</button>
+        </div>
+        <h2 id="day-title" style="margin-bottom: 6px"></h2>
+        <p class="muted" id="day-sum" style="margin-bottom: 18px"></p>
+        <div id="by-barber" style="display: grid; gap: 22px"></div>
+        <form id="block" class="board" style="margin-top: 32px; padding: 20px; display: grid; gap: 12px">
+          <h3>Block time</h3>
+          <p class="note">Lunch, a day off or a walk-in: customers can't book a blocked time.</p>
+          <div class="form-grid">
+            <label class="f">Barber<select class="input" id="b-barber"></select></label>
+            <label class="f">Reason<input class="input" id="b-reason" placeholder="Lunch" maxlength="80" /></label>
+            <label class="f">From<input class="input" type="time" id="b-from" value="13:00" step="900" required /></label>
+            <label class="f">To<input class="input" type="time" id="b-to" value="14:00" step="900" required /></label>
+          </div>
+          <div><button class="btn">Block this time</button></div>
+        </form>
+        <div style="margin-top: 32px"><h3 style="margin-bottom: 10px">Coming up</h3><p class="muted" id="upcoming"></p></div>
+      </div>
+    </main>
+    <script type="module" src="/admin.js"></script>
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Kəsim Barber Co.</title>
+    <meta name="description" content="Barber shop in Baku. Haircuts, fades, beard trims and hot towel shaves. Book a chair online." />
+    <meta name="theme-color" content="#123b2e" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='10' y='2' width='12' height='28' rx='6' fill='%23123b2e'/%3E%3Cpath d='M10 10l12-6v6L10 16zM10 22l12-6v6l-12 6z' fill='%23b9852f'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap">
+        <a class="logo" href="#"><span class="pole" aria-hidden="true"></span><span data-shop="name">Barber</span></a>
+        <nav class="links" aria-label="Sections">
+          <a href="#prices">Prices</a>
+          <a href="#barbers">Barbers</a>
+          <a href="#visit">Hours &amp; address</a>
+        </nav>
+        <a class="btn" href="#book">Book a chair</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <div>
+            <p class="eyebrow" id="hero-eyebrow">Barbers in Baku</p>
+            <h1>Take a seat. <em>We'll take it from here.</em></h1>
+            <p class="lead" data-shop="tagline"></p>
+            <div class="cta">
+              <a class="btn" href="#book">Book online</a>
+              <a class="btn ghost" href="#prices">See prices</a>
+            </div>
+          </div>
+          <aside class="next-card" aria-live="polite">
+            <p class="eyebrow">Next free chair</p>
+            <p class="big num" id="next-time">--:--</p>
+            <p class="small" id="next-detail">Checking the book…</p>
+            <div class="meta">
+              <div><b>Walk-ins</b>Welcome when a chair is free</div>
+              <div><b>Classic cut</b><span id="cut-price" class="num"></span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="prices">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Price list</h2>
+            <p class="muted">Every cut ends with a wash, a hot towel on the neck and styling. Times are how long the chair is yours.</p>
+          </div>
+          <div class="board" id="price-board"></div>
+        </div>
+      </section>
+
+      <section id="barbers">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>The barbers</h2>
+            <p class="muted">Pick someone you know, or book with whoever is free first.</p>
+          </div>
+          <div class="barbers" id="barber-list"></div>
+        </div>
+      </section>
+
+      <section id="book">
+        <div class="wrap">
+          <div class="section-head">
+            <h2>Book a chair</h2>
+            <p class="muted">Takes under a minute. You'll get a booking code and can cancel any time.</p>
+          </div>
+          <div id="booking"></div>
+        </div>
+      </section>
+
+      <section id="visit">
+        <div class="wrap visit">
+          <div>
+            <h2 style="margin-bottom: 18px">Opening hours</h2>
+            <table class="hours" id="hours"></table>
+          </div>
+          <div class="contact">
+            <h2 style="margin-bottom: 4px">Find us</h2>
+            <div><b>Address</b><span class="copy" data-shop="address"></span></div>
+            <div><b>Phone</b><span class="copy num" data-shop="phone"></span></div>
+            <div><b>Instagram</b><span class="copy" data-shop="instagram"></span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <span>© <span id="year"></span> <span data-shop="name"></span></span>
+        <span><a href="/cancel">Cancel a booking</a> · <a href="/admin">Staff</a></span>
+      </div>
+    </footer>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

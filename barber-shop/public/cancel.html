@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Cancel a booking</title>
+  </head>
+  <body>
+    <header class="top"><div class="wrap"><a class="logo" href="/"><span class="pole" aria-hidden="true"></span>Back to the shop</a></div></header>
+    <main class="wrap" style="padding-block: 40px 64px">
+      <form id="f" class="contact" style="max-width: 420px">
+        <h2>Cancel a booking</h2>
+        <p class="muted">Type the code you got when you booked.</p>
+        <label class="f">Booking code<input class="input code" id="code" maxlength="8" autocomplete="off" required style="text-transform: uppercase" /></label>
+        <button class="btn">Find my booking</button>
+        <div id="out" aria-live="polite"></div>
+      </form>
+    </main>
+    <script type="module">
+      const out = document.getElementById('out');
+      const code = document.getElementById('code');
+      document.getElementById('f').onsubmit = async (e) => {
+        e.preventDefault();
+        const r = await fetch('/api/bookings/' + encodeURIComponent(code.value.trim()));
+        if (!r.ok) return (out.innerHTML = '<p class="error">No booking with that code. Check it and try again.</p>');
+        const b = await r.json();
+        if (b.status !== 'booked') return (out.innerHTML = '<p class="muted">This booking is already cancelled.</p>');
+        out.innerHTML = '<p>Booking on <strong>' + b.date + ' at ' + b.time + '</strong>.</p><button type="button" class="btn ghost" id="go">Cancel this booking</button>';
+        document.getElementById('go').onclick = async () => {
+          const c = await fetch('/api/bookings/' + encodeURIComponent(b.code) + '/cancel', { method: 'POST' });
+          out.innerHTML = c.ok ? '<p><strong>Cancelled.</strong> The time is free again. Thanks for letting us know.</p>' : '<p class="error">Could not cancel. Please call the shop.</p>';
+        };
+      };
+    </script>
+  </body>
+</html>

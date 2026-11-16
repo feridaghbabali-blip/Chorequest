@@ -1,0 +1,19 @@
+{
+  "name": "barber-shop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Barber shop website with online booking",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.18.0",
+    "express": "^5.3.0"
+  }
+}
