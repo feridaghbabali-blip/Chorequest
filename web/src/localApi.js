@@ -81,7 +81,8 @@ export const onChange = (fn) => {
   listeners.add(fn);
   return () => listeners.delete(fn);
 };
-export const hasFamily = () => !!cache.family;
+// A family only counts once it has at least one member (an interrupted setup leaves none).
+export const hasFamily = () => !!cache.family && cache.members.length > 0;
 export const photoOf = (id) => cache.completions.find((c) => c.id === id)?.photo || null;
 
 // ---------- helpers ----------
@@ -295,22 +296,23 @@ async function handle(method, path, body = {}, headers = {}) {
   };
 
   if (method === 'POST' && route === '/families') {
-    if (cache.family) fail('family_exists');
+    if (hasFamily()) fail('family_exists');
     if (!clean(body.name) || !clean(body.parentName)) fail('missing_name');
     if (!/^\d{4,6}$/.test(String(body.pin || ''))) fail('bad_pin');
     const pin_hash = await hashPin(body.pin);
     const fam = { name: clean(body.name), code: 'LINK', currency: clean(body.currency, 5) || 'AZN', streak_days: 3, streak_bonus: 50, pin_hash, created_at: now() };
-    await db.doc('config/family').set(fam);
-    cache.family = { id: 'family', ...fam };
+    // Save the first member before the family document, so a setup that stops halfway never looks finished.
     const memberId = newId();
     const m = { name: clean(body.parentName, 30), avatar: clean(body.avatar, 8) || '🦁', color: COLOR.test(body.color) ? body.color : '#7C4DFF', role: 'parent', jar_split: { spend: 50, save: 30, give: 20 }, created_at: now() };
     await coll('members').doc(memberId).set(m);
     cache.members.push({ id: memberId, ...m });
+    await db.doc('config/family').set(fam);
+    cache.family = { id: 'family', ...fam };
     if (body.withSamples) await seedSamples(validDate(body.date));
     emit();
     return { token: 'artifact', code: 'LINK', memberId, parentToken: pin_hash };
   }
-  if (!cache.family) fail('no_family');
+  if (!hasFamily()) fail('no_family');
 
   if (method === 'GET' && route === '/state') return state(validDate(new URLSearchParams(query).get('date')), headers);
 
